@@ -121,3 +121,38 @@ All endpoints require an `Authorization: Bearer <API_KEY>` header.
 ---
 
 *This MVP is intended as a proof-of-concept and is not recommended for production workloads requiring high security, reliability, or scalability.*
+
+---
+
+## Recommended Project Structure (Enterprise Node.js API)
+
+```
+scams3/
+├── src/
+│   ├── api/                # Route definitions and controllers
+│   │   ├── buckets/        # Bucket-related endpoints
+│   │   └── files/          # File-related endpoints
+│   ├── services/           # Business logic and FTP integration
+│   ├── models/             # Data models and validation schemas
+│   ├── middlewares/        # Express middlewares (auth, error handling, etc.)
+│   ├── utils/              # Utility/helper functions
+│   ├── config/             # Configuration (env, FTP, etc.)
+│   ├── types/              # TypeScript type definitions
+│   └── app.ts              # Express app entry point
+├── tests/                  # Unit and integration tests
+├── public/                 # Static files (if needed)
+├── scripts/                # Automation and setup scripts
+├── docs/                   # Documentation (architecture, API, etc.)
+├── .env                    # Environment variables (never commit secrets)
+├── .gitignore              # Git ignore rules
+├── package.json            # NPM dependencies and scripts
+├── tsconfig.json           # TypeScript configuration
+└── README.md               # Project overview
+```
+
+**Notes:**
+- Each folder should contain an `index.ts` for re-exports if needed.
+- Keep controllers thin; put business logic in services.
+- Use environment variables for sensitive config.
+- Organize tests to mirror the `src/` structure for clarity.
+- Follow best practices for error handling, validation, and security.
