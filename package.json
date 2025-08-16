@@ -1,0 +1,42 @@
+{
+  "name": "scams3",
+  "version": "1.0.0",
+  "description": "S4 (ScamS3) Bucket is a 100% authentic knockoff of AWS S3, but under the hood, it’s just FTP in a trenchcoat. Built with NodeJS, this open-source abomination lets you interact with an S3-like API while secretly storing files on a janky FTP server (yes, even that crusty old IIS shared hosting you’ve been avoiding and that ftp server you have to pay for will work with this).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "feature-pr": "node scripts/feature-pr.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonbarlo/scams3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonbarlo/scams3/issues"
+  },
+  "homepage": "https://github.com/jonbarlo/scams3#readme",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "jest": "^30.0.5",
+    "playwright": "^1.54.2",
+    "sequelize-cli": "^6.6.3",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "sequelize": "^6.37.7",
+    "tedious": "^18.6.1"
+  }
+}
