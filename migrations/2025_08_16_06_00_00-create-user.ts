@@ -12,9 +12,25 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     apiKey: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    permissions: {
+      type: DataTypes.ENUM(
+        'FULL_CONTROL',
+        'READ',
+        'WRITE',
+        'READ_ACP',
+        'WRITE_ACP',
+        'NONE'
+      ),
+      allowNull: false,
+      defaultValue: 'READ',
     },
     createdAt: {
       allowNull: false,

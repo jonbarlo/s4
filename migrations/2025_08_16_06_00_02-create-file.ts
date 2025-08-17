@@ -21,7 +21,7 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       allowNull: false,
     },
     bucketId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
         model: 'Buckets',
@@ -31,7 +31,7 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       onDelete: 'CASCADE',
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
         model: 'Users',
@@ -39,6 +39,10 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
+    },
+    targetFTPfolder: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,

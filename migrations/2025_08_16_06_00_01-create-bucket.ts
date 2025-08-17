@@ -12,6 +12,10 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    targetFTPfolder: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
