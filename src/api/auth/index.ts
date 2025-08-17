@@ -18,18 +18,27 @@ const signOptions: SignOptions = { expiresIn: JWT_EXPIRES_IN as SignOptions['exp
 // POST /auth/login
 router.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
+  console.log('Login attempt:', { username, password });
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }
+  console.log('About to fetch user:', username);
   const user = await db.User.findOne({
     where: { username },
-    attributes: ['id', 'username', 'apiKey', 'password', 'createdAt', 'updatedAt'],
-    raw: true
+    attributes: ['id', 'username', 'apiKey', 'password', 'createdAt', 'updatedAt', 'permissions']
   });
+  console.log('User from DB:', user);
   if (!user) {
+    console.log('User not found in DB!');
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  if (!(await bcrypt.compare(password, user.password))) {
+  if (!user.password) {
+    console.error('User password is null or undefined:', user);
+    return res.status(500).json({ error: 'User password is missing in DB' });
+  }
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  console.log('Password match:', passwordMatch);
+  if (!passwordMatch) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   // Generate new apiKey

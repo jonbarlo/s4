@@ -6,7 +6,7 @@ export const up = async ({ context }: { context: QueryInterface }) => {
   const bobPlain = 'bob-password';
   const aliceHash = await bcrypt.hash(alicePlain, 10);
   const bobHash = await bcrypt.hash(bobPlain, 10);
-  await context.bulkInsert('Users', [
+  const users = [
     {
       username: 'alice',
       password: aliceHash,
@@ -23,8 +23,9 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       createdAt: new Date(),
       updatedAt: new Date(),
     }
-  ], {});
-  console.log('Seeded users:');
+  ];
+  await context.bulkInsert('Users', users, {});
+  console.log('Seeded users:', users);
   console.log('alice | password:', alicePlain, '| apiKey: alice-key | permissions: FULL_CONTROL');
   console.log('bob   | password:', bobPlain, '| apiKey: bob-key | permissions: READ');
 };
