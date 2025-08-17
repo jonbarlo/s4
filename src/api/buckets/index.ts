@@ -17,9 +17,14 @@ router.post('/', jwtAuthMiddleware, async (req: Request, res: Response) => {
 
 // GET /buckets - list all buckets for the user
 router.get('/', jwtAuthMiddleware, async (req: Request, res: Response) => {
-  const user = (req as any).user;
-  const buckets = await db.Bucket.findAll({ where: { userId: user.id } });
-  res.json({ buckets });
+  try {
+    const user = (req as any).user;
+    const buckets = await db.Bucket.findAll({ where: { userId: user.id } });
+    res.json({ buckets });
+  } catch (err: any) {
+    console.error('Error in GET /buckets:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+  }
 });
 
 export default router;

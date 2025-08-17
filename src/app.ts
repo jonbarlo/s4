@@ -23,11 +23,14 @@ console.log('DEBUG ENV', {
 app.get('/health', async (req, res) => {
   const envLoaded = !!process.env.DB_HOST && !!process.env.DB_USER && !!process.env.DB_PASSWORD && !!process.env.DB_NAME && !!process.env.DB_PORT;
   let dbOk = false;
+  let dbError = null;
   try {
     await db.sequelize.authenticate();
     dbOk = true;
   } catch (e) {
     dbOk = false;
+    dbError = e instanceof Error ? e.message : String(e);
+    console.error('DB Connection Error:', dbError);
   }
   res.json({
     status: envLoaded && dbOk ? 'ok' : 'error',
@@ -35,7 +38,8 @@ app.get('/health', async (req, res) => {
     dbOk,
     dbHost: process.env.DB_HOST,
     dbUser: process.env.DB_USER,
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    dbError
   });
 });
 

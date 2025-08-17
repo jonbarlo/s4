@@ -4,6 +4,7 @@ interface BucketAttributes {
   id?: number;
   name: string;
   targetFTPfolder: string;
+  userId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -14,6 +15,7 @@ export class Bucket extends Model<BucketAttributes, BucketCreationAttributes> im
   public id!: number;
   public name!: string;
   public targetFTPfolder!: string;
+  public userId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -36,6 +38,10 @@ export default (sequelize: Sequelize) => {
       },
       targetFTPfolder: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
       createdAt: DataTypes.DATE,
