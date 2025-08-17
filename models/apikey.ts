@@ -1,51 +1,48 @@
 import { Model, DataTypes, Sequelize, Optional } from 'sequelize';
 
-interface BucketAttributes {
+interface ApiKeyAttributes {
   id?: number;
-  name: string;
-  targetFTPfolder: string;
+  userId: number;
+  key: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface BucketCreationAttributes extends Optional<BucketAttributes, 'id'> {}
+interface ApiKeyCreationAttributes extends Optional<ApiKeyAttributes, 'id'> {}
 
-export class Bucket extends Model<BucketAttributes, BucketCreationAttributes> implements BucketAttributes {
+export class ApiKey extends Model<ApiKeyAttributes, ApiKeyCreationAttributes> implements ApiKeyAttributes {
   public id!: number;
-  public name!: string;
-  public targetFTPfolder!: string;
+  public userId!: number;
+  public key!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
-
-  static associate(models: any) {
-    Bucket.hasMany(models.File, { foreignKey: 'bucketId', as: 'files' });
-  }
 }
 
 export default (sequelize: Sequelize) => {
-  Bucket.init(
+  ApiKey.init(
     {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING,
+      userId: {
+        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
-      targetFTPfolder: {
+      key: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
     },
     {
       sequelize,
-      modelName: 'Bucket',
-      tableName: 'Buckets',
+      modelName: 'ApiKey',
+      tableName: 'ApiKeys',
     }
   );
-  return Bucket;
+  return ApiKey;
 };

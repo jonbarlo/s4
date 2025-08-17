@@ -2,7 +2,7 @@ console.log('CONFIG DEBUG: process.env.DB_HOST =', process.env.DB_HOST);
 const config = {
   development: {
     username: process.env.DB_USER,
-    password: process.env.DB_PASS,
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST, // <-- add host for Sequelize
     port: process.env.DB_PORT,
@@ -17,7 +17,7 @@ const config = {
   },
   test: {
     username: process.env.DB_USER,
-    password: process.env.DB_PASS,
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME + '_test',
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -32,7 +32,7 @@ const config = {
   },
   production: {
     username: process.env.DB_USER,
-    password: process.env.DB_PASS,
+    password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,

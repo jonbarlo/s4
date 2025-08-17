@@ -29,3 +29,12 @@ S4 (ScamS3) Bucket is a 100% authentic knockoff of AWS S3, but under the hood, i
 
 ## Technical Description
 Scam secure storage service or S4(ScamS3) just like the s3 bucket but under the hood it is using a third party FTP server to perform read/write operations on the files, open source project built with nodeJS and the MVP will run in a shitty shared IIS server
+
+# Creating a new feature branch and raising a PR
+```
+git checkout -b feature/api-crud-endpoints
+git add .
+git commit -m "Add CRUD endpoints for buckets, folders, files, and API key management"
+git push -u origin feature/api-crud-endpoints
+gh pr create --fill --title "API CRUD endpoints" --body "Implements endpoints for creating and listing buckets, folders, files, and API keys. Updates .http file with sample requests. Enforces JWT auth and enterprise conventions throughout."
+```

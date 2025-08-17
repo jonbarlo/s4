@@ -18,6 +18,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   public readonly updatedAt!: Date;
 
   static associate(models: any) {
+    User.hasMany(models.ApiKey, { foreignKey: 'userId', as: 'apiKeys' });
     User.hasMany(models.File, { foreignKey: 'userId', as: 'files' });
   }
 }
