@@ -1,4 +1,4 @@
-#S4 (ScamS3) Bucket – Because it’s S3… but not really. 🚀🤡 🪣 It is the S4 bucket (ScamS3)
+# S4 (ScamS3) Bucket – Because it’s S3… but not really. 🚀🤡 🪣 It is the S4 bucket (ScamS3)
 
 ## Overview
 S4 (ScamS3) Bucket is a 100% authentic knockoff of AWS S3, but under the hood, it’s just FTP in a trenchcoat. Built with NodeJS, this open-source abomination lets you interact with an S3-like API while secretly storing files on a janky FTP server (yes, even that crusty old IIS shared hosting you’ve been avoiding and that ftp server you have to pay for will work with this).

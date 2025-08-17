@@ -1,15 +1,16 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node-esm
 /**
- * feature-pr.js
- * Usage: node scripts/feature-pr.js <feature-branch-name> "PR Title" "PR Description"
+ * feature-pr.ts
+ * Usage: ts-node scripts/feature-pr.ts <feature-branch-name> "PR Title" "PR Description"
  *
  * Requires: GitHub CLI (gh) installed and authenticated.
  */
-const { execSync } = require('child_process');
+import 'dotenv/config';
+import { execSync } from 'child_process';
 
 const [,, branch, title, desc] = process.argv;
 if (!branch || !title) {
-  console.error('Usage: node scripts/feature-pr.js <feature-branch-name> "PR Title" "PR Description"');
+  console.error('Usage: ts-node scripts/feature-pr.ts <feature-branch-name> "PR Title" "PR Description"');
   process.exit(1);
 }
 
@@ -18,7 +19,7 @@ try {
   execSync(`git push -u origin ${branch}`, { stdio: 'inherit' });
   execSync(`gh pr create --fill --title "${title}"${desc ? ` --body "${desc}"` : ''}`, { stdio: 'inherit' });
   console.log('Feature branch created and PR opened!');
-} catch (err) {
+} catch (err: any) {
   console.error('Error creating branch or PR:', err.message);
   process.exit(1);
 }
