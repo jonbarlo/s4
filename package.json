@@ -7,16 +7,19 @@
     "doc": "docs"
   },
   "scripts": {
-    "migrate:all": "ts-node scripts/run-migrations.ts",
-    "seed:foo": "ts-node scripts/run-seeders.ts",
-    "drop:tables": "ts-node scripts/drop-tables.ts",
-    "drop:records": "ts-node scripts/drop-records.ts",
-    "test:dotenv": "ts-node scripts/check-dotenv.ts",
-    "test:db": "ts-node scripts/check-db-connection.ts",
-    "feature-pr": "ts-node scripts/feature-pr.ts",
+    "migrate:all": "ts-node src/scripts/run-migrations.ts",
+    "seed:foo": "ts-node src/scripts/run-seeders.ts",
+    "drop:tables": "ts-node src/scripts/drop-tables.ts",
+    "drop:records": "ts-node src/scripts/drop-records.ts",
+    "test:dotenv": "ts-node src/scripts/check-dotenv.ts",
+    "test:db": "ts-node src/scripts/check-db-connection.ts",
+    "test:db:mssql": "ts-node src/scripts/check-db-mssql.ts",
+    "feature-pr": "ts-node src/scripts/feature-pr.ts",
     "build": "tsc",
     "dev": "ts-node src/app.ts",
-    "dev:watch": "nodemon --watch src --ext ts --exec ts-node src/app.ts"
+    "dev:watch": "nodemon --watch src --ext ts --exec ts-node src/app.ts",
+    "test": "jest",
+    "deploy:mochahost": "ts-node src/scripts/deploy-mochahost.ts"
   },
   "repository": {
     "type": "git",
@@ -42,7 +45,9 @@
     "supertest": "^7.1.4",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "sqlite3": "^5.1.6",
+    "mssql": "^10.0.0"
   },
   "dependencies": {
     "@types/sequelize": "^4.28.20",
@@ -53,6 +58,7 @@
     "sequelize": "^6.37.7",
     "sequelize-typescript": "^2.1.6",
     "tedious": "^18.6.1",
-    "umzug": "^3.8.2"
+    "umzug": "^3.8.2",
+    "basic-ftp": "^5.0.5"
   }
 }

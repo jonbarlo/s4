@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import db from '../../../models';
+import db from '../../models';
 import { jwtAuthMiddleware } from '../../middlewares/auth';
 import bcrypt from 'bcrypt';
 import type { SignOptions } from 'jsonwebtoken';
@@ -21,27 +21,44 @@ router.post('/login', async (req: Request, res: Response) => {
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }
-  const user = await db.User.findOne({
-    where: { username },
-    attributes: ['id', 'username', 'apiKey', 'password', 'createdAt', 'updatedAt'],
-    raw: true
-  });
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid credentials' });
+  console.log('About to fetch user:', username);
+  try {
+    const user = await db.User.findOne({
+      where: { username },
+      attributes: ['id', 'username', 'apiKey', 'password', 'createdAt', 'updatedAt', 'permissions']
+    });
+    console.log('User from DB:', user);
+    if (!user) {
+      console.log('User not found in DB!');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    if (!user.password) {
+      console.error('User password is null or undefined:', user);
+      return res.status(500).json({ error: 'User password is missing in DB' });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match:', passwordMatch);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    // Generate new apiKey
+    const newApiKey = crypto.randomBytes(32).toString('hex');
+    await db.User.update({ apiKey: newApiKey }, { where: { id: user.id } });
+    // Issue JWT
+    const token = jwt.sign(
+      { userId: user.id },
+      JWT_SECRET,
+      signOptions
+    );
+    res.json({ token });
+  } catch (err) {
+    console.error('Sequelize error:', err);
+    if (err instanceof Error) {
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+    }
+    throw err;
   }
-  if (!(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: 'Invalid credentials' });
-  }
-  // Generate new apiKey
-  const newApiKey = crypto.randomBytes(32).toString('hex');
-  await db.User.update({ apiKey: newApiKey }, { where: { id: user.id } });
-  // Issue JWT
-  const token = jwt.sign(
-    { userId: user.id },
-    JWT_SECRET,
-    signOptions
-  );
-  res.json({ token });
 });
 
 // GET /auth/validate

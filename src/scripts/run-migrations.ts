@@ -14,19 +14,19 @@ if (envConfig.use_env_variable) {
 }
 
 const umzug = new Umzug({
-  migrations: { glob: 'seeders/*.ts' },
+  migrations: { glob: 'src/migrations/*.ts' },
   context: sequelize.getQueryInterface(),
-  storage: new SequelizeStorage({ sequelize, tableName: 'SequelizeData' }),
+  storage: new SequelizeStorage({ sequelize }),
   logger: console,
 });
 
 (async () => {
   try {
     await umzug.up();
-    console.log('Seeders ran successfully.');
+    console.log('Migrations ran successfully.');
     process.exit(0);
   } catch (err) {
-    console.error('Error running seeders:', err);
+    console.error('Error running migrations:', err);
     process.exit(1);
   }
 })();

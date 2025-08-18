@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import db from '../../models';
+import db from '../models';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'changeme';
 
