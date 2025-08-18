@@ -7,7 +7,7 @@ GET https://api.s4.506software.com/health
 ### Users
 GET https://api.s4.506software.com/users
 
-### Auth (example: login, adjust as needed)
+### Auth (login)
 POST https://api.s4.506software.com/auth/login
 Content-Type: application/json
 
@@ -16,11 +16,47 @@ Content-Type: application/json
   "password": "alice-password"
 }
 
-### Buckets (example: list buckets)
+### Buckets - List
 GET https://api.s4.506software.com/buckets
+Authorization: Bearer {{token}}
 
-### Files (example: list files)
+### Buckets - Create
+POST https://api.s4.506software.com/buckets
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "my-bucket",
+  "targetFTPfolder": "folder1"
+}
+
+### Files - List
 GET https://api.s4.506software.com/files
+Authorization: Bearer {{token}}
 
-### Folders (example: list folders)
+### Files - Create
+POST https://api.s4.506software.com/files
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "filename": "file.txt",
+  "size": 1234,
+  "uploadedAt": "2025-08-18T00:00:00.000Z",
+  "bucketId": 1,
+  "targetFTPfolder": "folder1"
+}
+
+### Folders - List
 GET https://api.s4.506software.com/folders
+Authorization: Bearer {{token}}
+
+### Folders - Create
+POST https://api.s4.506software.com/folders
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "my-folder",
+  "bucketId": 1
+}

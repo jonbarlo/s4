@@ -440,3 +440,34 @@ This is a classic sign of a fatal Node.js startup error—often due to missing e
 - **Remove debug code that exposes sensitive details before going live.**
   - Debug output (such as environment variables, stack traces, or internal errors) should only be present during troubleshooting.
   - Before deploying to production, clean up all debug responses to avoid leaking sensitive information. 
+
+## CRITICAL: Use a Single Shared Sequelize Instance
+
+- **Never create multiple Sequelize instances in your app.**
+  - Only initialize Sequelize once (typically in your main app file, e.g., `app.ts`).
+  - Pass the initialized models object (`db`) to all routers, middleware, and scripts that need database access.
+  - Do **not** import and initialize models separately in each file—this will create multiple DB connections and cause fatal errors.
+
+**Symptoms of the anti-pattern:**
+- HTML 500 errors from IIS (not JSON), even when other endpoints work.
+- Fatal startup crashes that are not caught by Express error handlers.
+- Inconsistent database state or missing models in some routes.
+
+**Correct pattern:**
+- Initialize Sequelize once:
+  ```ts
+  import { Sequelize } from 'sequelize';
+  import initializeModels from './models';
+  const sequelize = new Sequelize(/* ...config... */);
+  const db = initializeModels(sequelize);
+  ```
+- Pass `db` to all routers and middleware:
+  ```ts
+  import createAuthRouter from './api/auth';
+  app.use('/auth', createAuthRouter(db));
+  ```
+- For scripts, initialize `sequelize` and `db` at the top of the script before using any models.
+
+**Why this matters:**
+- Using a single Sequelize instance ensures all parts of your app share the same DB connection and models.
+- Prevents hard-to-debug fatal errors and makes your app robust for production deployment on Mochahost or any shared host. 

@@ -1,5 +1,20 @@
 import 'dotenv/config';
-import db from '../models';
+import { Sequelize } from 'sequelize';
+import initializeModels from '../models';
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME!,
+  process.env.DB_USER!,
+  process.env.DB_PASSWORD!,
+  {
+    host: process.env.DB_HOST!,
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 1433,
+    dialect: 'mssql',
+    dialectOptions: { options: { encrypt: false }, authentication: { type: 'default' } },
+    logging: false,
+  }
+);
+const db = initializeModels(sequelize);
 
 (async () => {
   try {

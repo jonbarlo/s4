@@ -3,11 +3,13 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { Sequelize } from 'sequelize';
-import bucketsRouter from './api/buckets';
-import filesRouter from './api/files';
-import foldersRouter from './api/folders';
+import initializeModels from './models';
+import createAuthRouter from './api/auth';
+import { createJwtAuthMiddleware } from './middlewares/auth';
+import createBucketsRouter from './api/buckets';
+import createFilesRouter from './api/files';
+import createFoldersRouter from './api/folders';
 import cors from 'cors';
-import authRouter from './api/auth';
 
 let envPath: string;
 if (process.env.NODE_ENV === 'production') {
@@ -34,6 +36,7 @@ console.log('[DEBUG] Loaded environment variables:', {
 
 // Setup Sequelize connection (no queries yet)
 let sequelize: Sequelize | null = null;
+let db: any = null;
 if (missingEnvVars.length === 0) {
   try {
     sequelize = new Sequelize(
@@ -48,7 +51,8 @@ if (missingEnvVars.length === 0) {
         logging: console.log,
       }
     );
-    console.log('[DEBUG] Sequelize instance created.');
+    db = initializeModels(sequelize);
+    console.log('[DEBUG] Sequelize instance and models initialized.');
   } catch (err) {
     console.error('[DEBUG] Sequelize connection error:', err);
   }
@@ -131,10 +135,11 @@ app.get('/users', async (req, res) => {
   }
 });
 
-app.use('/auth', authRouter);
-app.use('/buckets', bucketsRouter);
-app.use('/files', filesRouter);
-app.use('/folders', foldersRouter);
+const jwtAuthMiddleware = createJwtAuthMiddleware(db);
+app.use('/auth', createAuthRouter(db));
+app.use('/buckets', createBucketsRouter(db, jwtAuthMiddleware));
+app.use('/files', createFilesRouter(db, jwtAuthMiddleware));
+app.use('/folders', createFoldersRouter(db, jwtAuthMiddleware));
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[DEBUG] Error handler:', err);
