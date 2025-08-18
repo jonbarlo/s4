@@ -3,6 +3,11 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { Sequelize } from 'sequelize';
+import bucketsRouter from './api/buckets';
+import filesRouter from './api/files';
+import foldersRouter from './api/folders';
+import cors from 'cors';
+import authRouter from './api/auth';
 
 let envPath: string;
 if (process.env.NODE_ENV === 'production') {
@@ -54,6 +59,10 @@ const PORT = process.env.PORT || 3000;
 
 console.log('[DEBUG] Starting main app (minimal baseline)...');
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
 app.use((req, res, next) => {
   console.log(`[DEBUG] Incoming request: ${req.method} ${req.url}`);
   next();
@@ -70,7 +79,8 @@ app.get('/', (req, res) => {
         ENV_PATH: envPath,
         envExists,
         CWD: process.cwd(),
-        __dirname: __dirname
+        __dirname: __dirname,
+        JWT_SECRET: process.env.JWT_SECRET || null
       }
     });
   }
@@ -80,13 +90,15 @@ app.get('/', (req, res) => {
     dbHost: process.env.DB_HOST || null,
     env: {
       NODE_ENV: process.env.NODE_ENV,
-      DB_HOST: process.env.DB_HOST
+      DB_HOST: process.env.DB_HOST,
+      JWT_SECRET: process.env.JWT_SECRET || null
     },
     debug: {
       ENV_PATH: envPath,
       envExists,
       CWD: process.cwd(),
-      __dirname: __dirname
+      __dirname: __dirname,
+      JWT_SECRET: process.env.JWT_SECRET || null
     }
   });
 });
@@ -118,6 +130,11 @@ app.get('/users', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Failed to fetch users', error: err.message });
   }
 });
+
+app.use('/auth', authRouter);
+app.use('/buckets', bucketsRouter);
+app.use('/files', filesRouter);
+app.use('/folders', foldersRouter);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[DEBUG] Error handler:', err);

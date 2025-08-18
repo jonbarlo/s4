@@ -375,3 +375,68 @@ console.log('🔧 DB_HOST:', process.env.DB_HOST ? 'SET' : 'NOT SET');
 ---
 
 **This guide reflects the current, working Mochahost IIS Node.js deployment process as confirmed by support and validated through test API deployment.** 
+
+## Troubleshooting: Diagnosing 500 Errors Without Log Access
+
+If you encounter a 500 error like this in your browser:
+
+```
+iisnode encountered an error when processing the request.
+
+HRESULT: 0x2
+HTTP status: 500
+HTTP subStatus: 1002
+HTTP reason: Internal Server Error
+You are receiving this HTTP 200 response because system.webServer/iisnode/@devErrorsEnabled configuration setting is 'true'.
+
+In addition to the log of stdout and stderr of the node.exe process, consider using debugging and ETW traces to further diagnose the problem.
+
+You may get additional information about this error condition by logging stdout and stderr of the node.exe process. To enable logging, set the system.webServer/iisnode/@loggingEnabled configuration setting to 'true' (current value is 'false').
+```
+
+This is a classic sign of a fatal Node.js startup error—often due to missing environment variables, missing dependencies, or a crash in router mounting.
+
+### Rapid Debugging Pattern
+
+1. **Wrap router mounting in a try/catch:**
+   ```ts
+   let startupError: any = null;
+   try {
+     import authRouter from './api/auth';
+     // ... other routers ...
+     app.use('/auth', authRouter);
+     // ...
+   } catch (err) {
+     startupError = err;
+     console.error('[FATAL] Startup error:', err);
+   }
+   ```
+2. **Add a global error middleware:**
+   ```ts
+   app.use((req, res, next) => {
+     if (startupError) {
+       return res.status(500).json({
+         status: 'error',
+         message: 'Startup error',
+         error: startupError.message || String(startupError),
+         stack: startupError.stack || null
+       });
+     }
+     next();
+   });
+   ```
+
+**Why:**
+- This will return the actual startup error in every HTTP response, making it possible to debug fatal issues even when you cannot access server logs.
+- Remove this code after resolving the error to avoid exposing sensitive information in production. 
+
+## Best Practices: Error Handling and Debugging
+
+- **Never throw exceptions at the top level in routers or middleware.**
+  - Always return errors as JSON responses. This prevents fatal startup crashes and ensures your app can always respond to HTTP requests, even if there are configuration or dependency issues.
+  - This is especially important on shared hosting like Mochahost, where you may not have access to server logs.
+  - Replicate this pattern in all future code and reviews.
+
+- **Remove debug code that exposes sensitive details before going live.**
+  - Debug output (such as environment variables, stack traces, or internal errors) should only be present during troubleshooting.
+  - Before deploying to production, clean up all debug responses to avoid leaking sensitive information. 

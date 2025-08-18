@@ -1,0 +1,26 @@
+### Main App Root
+GET https://api.s4.506software.com/
+
+### Health Check
+GET https://api.s4.506software.com/health
+
+### Users
+GET https://api.s4.506software.com/users
+
+### Auth (example: login, adjust as needed)
+POST https://api.s4.506software.com/auth/login
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "password": "alice-password"
+}
+
+### Buckets (example: list buckets)
+GET https://api.s4.506software.com/buckets
+
+### Files (example: list files)
+GET https://api.s4.506software.com/files
+
+### Folders (example: list folders)
+GET https://api.s4.506software.com/folders
