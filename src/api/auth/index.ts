@@ -69,7 +69,7 @@ export default function createAuthRouter(db: any) {
     }
 
     try {
-      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
       res.json({ status: 'ok', token });
     } catch (err) {
       const error = err as Error;
