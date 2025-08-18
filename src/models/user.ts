@@ -3,6 +3,7 @@ import { Model, DataTypes, Sequelize, Optional } from 'sequelize';
 interface UserAttributes {
   id?: number;
   username: string;
+  password: string;
   apiKey: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -13,6 +14,7 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 export class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: number;
   public username!: string;
+  public password!: string;
   public apiKey!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -32,6 +34,10 @@ export default (sequelize: Sequelize) => {
         primaryKey: true,
       },
       username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      password: {
         type: DataTypes.STRING,
         allowNull: false,
       },

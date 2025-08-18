@@ -18,6 +18,7 @@ const signOptions: SignOptions = { expiresIn: JWT_EXPIRES_IN as SignOptions['exp
 // POST /auth/login
 router.post('/login', async (req: Request, res: Response) => {
   const { username, password } = req.body;
+  console.log('Login attempt:', { username, password });
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }

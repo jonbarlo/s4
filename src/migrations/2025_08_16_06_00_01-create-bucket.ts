@@ -16,6 +16,12 @@ export const up = async ({ context }: { context: QueryInterface }) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'Users', key: 'id' },
+      onDelete: 'CASCADE',
+    },
     createdAt: {
       allowNull: false,
       type: DataTypes.DATE,
