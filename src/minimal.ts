@@ -4,18 +4,11 @@ import path from 'path';
 import fs from 'fs';
 import { Sequelize } from 'sequelize';
 
-let envPath: string;
-if (process.env.NODE_ENV === 'production') {
-  envPath = path.resolve(__dirname, '../../.env');
-} else {
-  envPath = path.resolve(__dirname, '../.env');
-}
-dotenv.config({ path: envPath });
-console.log('[DEBUG] Loaded .env from:', envPath);
-console.log('[DEBUG] __dirname:', __dirname);
-console.log('[DEBUG] ENV_PATH:', envPath);
-console.log('[DEBUG] envExists:', fs.existsSync(envPath));
+// Always load .env from the project root (three levels up from dist/src/minimal.js)
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+console.log('[DEBUG] Loaded .env from', path.resolve(__dirname, '../../.env'));
 
+// Check for required DB env vars (do not throw, just check)
 const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
 const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
 
@@ -52,14 +45,18 @@ if (missingEnvVars.length === 0) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-console.log('[DEBUG] Starting main app (minimal baseline)...');
+// Debug: Log when server starts
+console.log('[DEBUG] Starting minimal API...');
 
+// Debug: Log every request
 app.use((req, res, next) => {
   console.log(`[DEBUG] Incoming request: ${req.method} ${req.url}`);
   next();
 });
 
+// Root endpoint
 app.get('/', (req, res) => {
+  const envPath = path.resolve(__dirname, '../../.env');
   const envExists = fs.existsSync(envPath);
   if (missingEnvVars.length > 0) {
     return res.status(500).json({
@@ -76,7 +73,7 @@ app.get('/', (req, res) => {
   }
   res.json({
     status: 'ok',
-    message: 'Main app (minimal baseline) is working',
+    message: 'Minimal API with env and DB connection setup is working',
     dbHost: process.env.DB_HOST || null,
     env: {
       NODE_ENV: process.env.NODE_ENV,
@@ -91,6 +88,7 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health endpoint with DB query
 app.get('/health', async (req, res) => {
   console.log('[DEBUG] Health endpoint hit');
   if (!sequelize) {
@@ -98,13 +96,14 @@ app.get('/health', async (req, res) => {
   }
   try {
     const [results] = await sequelize.query('SELECT 1+1 AS result');
-    res.json({ status: 'ok', message: 'Main app health is working', dbTest: results });
+    res.json({ status: 'ok', message: 'Minimal API health is working', dbTest: results });
   } catch (err: any) {
     console.error('[DEBUG] DB health check error:', err);
     res.status(500).json({ status: 'error', message: 'DB health check failed', error: err.message });
   }
 });
 
+// Users endpoint: query Users table
 app.get('/users', async (req, res) => {
   if (!sequelize) {
     return res.status(500).json({ status: 'error', message: 'Sequelize not initialized' });
@@ -119,11 +118,12 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('[DEBUG] Error handler:', err);
   res.status(500).json({ status: 'error', error: err.message || 'Unknown error' });
 });
 
 app.listen(PORT, () => {
-  console.log(`[DEBUG] Main app (minimal baseline) server running on port ${PORT}`);
+  console.log(`[DEBUG] Minimal API server running on port ${PORT}`);
 });

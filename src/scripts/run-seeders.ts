@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { Sequelize } from 'sequelize';
+import { Umzug, SequelizeStorage } from 'umzug';
 import config from '../config/config';
 
 const env = process.env.NODE_ENV || 'development';
@@ -12,13 +13,20 @@ if (envConfig.use_env_variable) {
   sequelize = new Sequelize(envConfig.database, envConfig.username, envConfig.password, envConfig);
 }
 
+const umzug = new Umzug({
+  migrations: { glob: 'src/seeders/*.ts' },
+  context: sequelize.getQueryInterface(),
+  storage: new SequelizeStorage({ sequelize, tableName: 'SequelizeData' }),
+  logger: console,
+});
+
 (async () => {
   try {
-    await sequelize.authenticate();
-    console.log('DB connection successful!');
+    await umzug.up();
+    console.log('Seeders ran successfully.');
     process.exit(0);
   } catch (err) {
-    console.error('DB connection failed:', err);
+    console.error('Error running seeders:', err);
     process.exit(1);
   }
 })();

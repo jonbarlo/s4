@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import db from '../models/index';
+import db from '../models';
 
 console.log('DEBUG: Sequelize config:', db.sequelize.config);
 

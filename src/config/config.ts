@@ -1,8 +1,10 @@
 import { Dialect } from 'sequelize';
+
 console.log('CONFIG DEBUG: process.env.DB_HOST =', process.env.DB_HOST);
 
 export type NodeEnv = 'development' | 'test' | 'production';
 export interface SequelizeConfig {
+  user?: string;
   username?: string;
   password?: string;
   database?: string;
@@ -20,17 +22,16 @@ const config: Record<NodeEnv, SequelizeConfig> = {
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+    host: process.env.DB_HOST, // <-- add host for Sequelize
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
     dialect: 'mssql',
     dialectOptions: {
       options: {
-        encrypt: process.env.DB_ENCRYPT === 'true', // set DB_ENCRYPT=true in .env if needed
-      },
-      authentication: {
-        type: 'default',
-      },
-    },
+        server: process.env.DB_HOST, // <-- keep server for tedious
+        instanceName: process.env.DB_INSTANCE || undefined,
+        encrypt: true
+      }
+    }
   },
   test: {
     dialect: 'sqlite',
@@ -38,16 +39,18 @@ const config: Record<NodeEnv, SequelizeConfig> = {
     logging: false,
   },
   production: {
+    user: process.env.DB_USER,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : undefined,
     dialect: 'mssql',
     dialectOptions: {
       options: {
         server: process.env.DB_HOST,
-        instanceName: process.env.DB_INSTANCE || undefined,
+        trustServerCertificate: true, // for self-signed certs (mochahost MSSQL AccessDeniedError)
+        //instanceName: process.env.DB_INSTANCE || undefined,
         encrypt: true
       }
     }
