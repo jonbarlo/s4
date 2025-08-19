@@ -1,0 +1,115 @@
+{
+  "info": {
+    "_postman_id": "s4-api-collection-001",
+    "name": "S4 API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Login (get JWT)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"alice-password\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "Buckets - List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/buckets", "host": ["{{baseUrl}}"], "path": ["buckets"] }
+      }
+    },
+    {
+      "name": "Buckets - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"my-bucket\",\n  \"targetFTPfolder\": \"my-bucket-folder\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/buckets", "host": ["{{baseUrl}}"], "path": ["buckets"] }
+      }
+    },
+    {
+      "name": "Files - List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/files", "host": ["{{baseUrl}}"], "path": ["files"] }
+      }
+    },
+    {
+      "name": "Files - Upload",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "" },
+            { "key": "bucketId", "type": "text", "value": "1" },
+            { "key": "targetFTPfolder", "type": "text", "value": "my-bucket-folder" }
+          ]
+        },
+        "url": { "raw": "{{baseUrl}}/files", "host": ["{{baseUrl}}"], "path": ["files"] }
+      }
+    },
+    {
+      "name": "Files - Download",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/files/{{fileId}}/download", "host": ["{{baseUrl}}"], "path": ["files", "{{fileId}}", "download"] }
+      }
+    },
+    {
+      "name": "Files - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/files/{{fileId}}", "host": ["{{baseUrl}}"], "path": ["files", "{{fileId}}"] }
+      }
+    },
+    {
+      "name": "Folders - List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/folders", "host": ["{{baseUrl}}"], "path": ["folders"] }
+      }
+    },
+    {
+      "name": "Folders - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"my-folder\",\n  \"bucketId\": 1\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/folders", "host": ["{{baseUrl}}"], "path": ["folders"] }
+      }
+    }
+  ]
+}
