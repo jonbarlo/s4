@@ -4,11 +4,11 @@ import path from 'path';
 import fs from 'fs';
 import { Sequelize } from 'sequelize';
 import initializeModels from './models';
-import createAuthRouter from './api/auth';
-import { createJwtAuthMiddleware } from './middlewares/auth';
-import createBucketsRouter from './api/buckets';
-import createFilesRouter from './api/files';
-import createFoldersRouter from './api/folders';
+// import createAuthRouter from './api/auth';
+// import { createJwtAuthMiddleware } from './middlewares/auth';
+// import createBucketsRouter from './api/buckets';
+// import createFilesRouter from './api/files';
+// import createFoldersRouter from './api/folders';
 // import cors from 'cors';
 
 // Dual-path .env loading: try ../.env, then ../../.env
@@ -45,9 +45,6 @@ if (missingEnvVars.length === 0) {
     console.error('[DEBUG] Sequelize connection error:', err);
   }
 }
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => res.send('ok'));
 
@@ -90,12 +87,5 @@ app.get('/users', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Failed to fetch users', error: err.message });
   }
 });
-
-// Restore authentication and all main routers
-const jwtAuthMiddleware = createJwtAuthMiddleware(db);
-app.use('/auth', createAuthRouter(db));
-app.use('/buckets', createBucketsRouter(db, jwtAuthMiddleware));
-app.use('/files', createFilesRouter(db, jwtAuthMiddleware));
-app.use('/folders', createFoldersRouter(db, jwtAuthMiddleware));
 
 export default app;
