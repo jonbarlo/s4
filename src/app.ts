@@ -146,6 +146,4 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ status: 'error', error: err.message || 'Unknown error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`[DEBUG] Main app (minimal baseline) server running on port ${PORT}`);
-});
+export default app;

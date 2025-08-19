@@ -1,17 +1,47 @@
 import { Router, Request, Response } from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import { uploadFile, deleteFile } from '../../services/ftp';
+
+const upload = multer({ dest: 'uploads/' });
 
 export default function createFilesRouter(db: any, jwtAuthMiddleware: any) {
   const router = Router();
 
-  // POST /files - create a new file (metadata only)
-  router.post('/', jwtAuthMiddleware, async (req: Request, res: Response) => {
+  // POST /files - upload a file and create a DB record
+  router.post('/', jwtAuthMiddleware, upload.single('file'), async (req: Request, res: Response) => {
     const user = (req as any).user;
-    const { filename, size, uploadedAt, bucketId, targetFTPfolder } = req.body;
-    if (!filename || !size || !uploadedAt || !bucketId || !targetFTPfolder) {
-      return res.status(400).json({ error: 'filename, size, uploadedAt, bucketId, and targetFTPfolder are required' });
+    const { bucketId, targetFTPfolder } = req.body;
+    if (!req.file || !bucketId || !targetFTPfolder) {
+      return res.status(400).json({ error: 'file, bucketId, and targetFTPfolder are required' });
     }
-    const file = await db.File.create({ filename, size, uploadedAt, bucketId, userId: user.id, targetFTPfolder });
-    res.status(201).json({ file });
+    const localPath = req.file.path;
+    const remotePath = path.posix.join(targetFTPfolder, req.file.originalname);
+    let fileRecord;
+    try {
+      // 1. Upload file to FTP
+      await uploadFile(remotePath, localPath);
+      // 2. Create DB record
+      fileRecord = await db.File.create({
+        filename: req.file.originalname,
+        size: req.file.size,
+        uploadedAt: new Date(),
+        bucketId,
+        userId: user.id,
+        targetFTPfolder,
+      });
+      res.status(201).json({ file: fileRecord });
+    } catch (err: any) {
+      // Clean up FTP and local file if needed
+      if (!fileRecord) {
+        try { await deleteFile(remotePath); } catch (e) { /* ignore */ }
+      }
+      res.status(500).json({ error: 'Failed to upload file', details: err.message });
+    } finally {
+      // Always remove the local file
+      fs.unlink(localPath, () => {});
+    }
   });
 
   // GET /files - list all files for the user

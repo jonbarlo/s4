@@ -7,6 +7,7 @@ interface FileAttributes {
   uploadedAt: Date;
   bucketId: number;
   userId: number;
+  targetFTPfolder: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -20,6 +21,7 @@ export class File extends Model<FileAttributes, FileCreationAttributes> implemen
   public uploadedAt!: Date;
   public bucketId!: number;
   public userId!: number;
+  public targetFTPfolder!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -55,6 +57,10 @@ export default (sequelize: Sequelize) => {
       },
       userId: {
         type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+      },
+      targetFTPfolder: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       createdAt: DataTypes.DATE,
