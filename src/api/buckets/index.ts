@@ -13,12 +13,14 @@ export default function createBucketsRouter(db: any, jwtAuthMiddleware: any) {
     }
     let bucket;
     try {
-      // 1. Create the folder via FTP first
+      console.log('[DEBUG] Attempting to create FTP folder:', targetFTPfolder);
       await createFolder(targetFTPfolder);
+      console.log('[DEBUG] FTP folder created successfully:', targetFTPfolder);
       // 2. If successful, create the DB record
       bucket = await db.Bucket.create({ name, targetFTPfolder, userId: user.id });
       res.status(201).json({ bucket });
     } catch (err: any) {
+      console.error('[ERROR] Failed to create FTP folder or DB record:', err);
       // If DB creation fails after FTP, try to clean up FTP folder
       if (!bucket) {
         try { await deleteFolder(targetFTPfolder); } catch (e) { /* ignore */ }

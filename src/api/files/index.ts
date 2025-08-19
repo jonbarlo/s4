@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { uploadFile, deleteFile, downloadFile } from '../../services/ftp';
+import { uploadFile, deleteFile, downloadFile, createFolder } from '../../services/ftp';
 import os from 'os';
 
 const upload = multer({ dest: 'uploads/' });
@@ -13,24 +13,38 @@ export default function createFilesRouter(db: any, jwtAuthMiddleware: any) {
   // POST /files - upload a file and create a DB record
   router.post('/', jwtAuthMiddleware, upload.single('file'), async (req: Request, res: Response) => {
     const user = (req as any).user;
-    const { bucketId, targetFTPfolder } = req.body;
-    if (!req.file || !bucketId || !targetFTPfolder) {
-      return res.status(400).json({ error: 'file, bucketId, and targetFTPfolder are required' });
+    const { bucketId } = req.body;
+    let { targetFTPfolder } = req.body;
+    if (!req.file || !bucketId) {
+      return res.status(400).json({ error: 'file and bucketId are required' });
+    }
+    // Always look up the bucket
+    const bucket = await db.Bucket.findOne({ where: { id: bucketId, userId: user.id } });
+    if (!bucket) {
+      return res.status(400).json({ error: 'Bucket not found for this user' });
+    }
+    // Always upload inside the bucket's folder
+    let finalFTPfolder = bucket.targetFTPfolder;
+    if (targetFTPfolder) {
+      // If a subfolder is provided, nest it inside the bucket's folder
+      finalFTPfolder = path.posix.join(bucket.targetFTPfolder, targetFTPfolder);
     }
     const localPath = req.file.path;
-    const remotePath = path.posix.join(targetFTPfolder, req.file.originalname);
+    const remotePath = path.posix.join(finalFTPfolder, req.file.originalname);
     let fileRecord;
     try {
-      // 1. Upload file to FTP
+      // 1. Ensure the folder exists on FTP
+      await createFolder(finalFTPfolder);
+      // 2. Upload file to FTP
       await uploadFile(remotePath, localPath);
-      // 2. Create DB record
+      // 3. Create DB record
       fileRecord = await db.File.create({
         filename: req.file.originalname,
         size: req.file.size,
         uploadedAt: new Date(),
         bucketId,
         userId: user.id,
-        targetFTPfolder,
+        targetFTPfolder: finalFTPfolder,
       });
       res.status(201).json({ file: fileRecord });
     } catch (err: any) {

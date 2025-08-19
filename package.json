@@ -16,8 +16,8 @@
     "test:db:mssql": "ts-node src/scripts/check-db-mssql.ts",
     "feature-pr": "ts-node src/scripts/feature-pr.ts",
     "build": "tsc",
-    "dev": "ts-node src/app.ts",
-    "dev:watch": "nodemon --watch src --ext ts --exec ts-node src/app.ts",
+    "dev": "ts-node src/server.ts",
+    "dev:watch": "nodemon --watch src --exec ts-node src/server.ts",
     "test": "jest",
     "deploy:mochahost": "ts-node src/scripts/deploy-mochahost.ts"
   },
