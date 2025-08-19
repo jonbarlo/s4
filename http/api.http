@@ -12,7 +12,7 @@ Content-Type: application/json
 
 ### Validate token (replace <token> with the JWT from login)
 GET http://localhost:3000/auth/validate
-Authorization: Bearer <token>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWxpY2UiLCJpYXQiOjE3NTU1NzE0NjYsImV4cCI6MTc1NTU3NTA2Nn0.1cZb5tEAbAwqtTs0ecG2puLS5MKaOAnchDF9z39zNZw
 
 ### Create new API key
 POST http://localhost:3000/auth/apikey/create
@@ -28,12 +28,12 @@ Authorization: Bearer <token>
 
 ### Create a new bucket
 POST http://localhost:3000/buckets
-Authorization: Bearer <token>
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWxpY2UiLCJpYXQiOjE3NTU1NzE0NjYsImV4cCI6MTc1NTU3NTA2Nn0.1cZb5tEAbAwqtTs0ecG2puLS5MKaOAnchDF9z39zNZw
 Content-Type: application/json
 
 {
-  "name": "my-bucket",
-  "targetFTPfolder": "my-bucket-folder"
+  "name": "my-bucket-4",
+  "targetFTPfolder": "my-bucket-folder-4"
 }
 
 ### List all buckets
