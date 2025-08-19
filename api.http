@@ -54,19 +54,23 @@ Content-Type: application/json
 GET http://localhost:3000/folders
 Authorization: Bearer <token>
 
-### Create a new file (metadata only)
+### Create a new file (upload)
 POST http://localhost:3000/files
 Authorization: Bearer <token>
-Content-Type: application/json
+Content-Type: multipart/form-data
 
-{
-  "filename": "file1.txt",
-  "size": 1234,
-  "uploadedAt": "2025-08-17T03:31:53.674Z",
-  "bucketId": 1,
-  "targetFTPfolder": "my-bucket-folder"
-}
+# Use your HTTP client to attach a file field named 'file' and fields:
+# bucketId: 1
+# targetFTPfolder: my-bucket-folder
 
 ### List all files
 GET http://localhost:3000/files
+Authorization: Bearer <token>
+
+### Download a file (replace <id> with file ID)
+GET http://localhost:3000/files/<id>/download
+Authorization: Bearer <token>
+
+### Delete a file (replace <id> with file ID)
+DELETE http://localhost:3000/files/<id>
 Authorization: Bearer <token>

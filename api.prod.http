@@ -34,18 +34,22 @@ Authorization: Bearer {{token}}
 GET https://api.s4.506software.com/files
 Authorization: Bearer {{token}}
 
-### Files - Create
+### Files - Create (upload)
 POST https://api.s4.506software.com/files
-Content-Type: application/json
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data
+
+# Use your HTTP client to attach a file field named 'file' and fields:
+# bucketId: 1
+# targetFTPfolder: folder1
+
+### Files - Download
+GET https://api.s4.506software.com/files/<id>/download
 Authorization: Bearer {{token}}
 
-{
-  "filename": "file.txt",
-  "size": 1234,
-  "uploadedAt": "2025-08-18T00:00:00.000Z",
-  "bucketId": 1,
-  "targetFTPfolder": "folder1"
-}
+### Files - Delete
+DELETE https://api.s4.506software.com/files/<id>
+Authorization: Bearer {{token}}
 
 ### Folders - List
 GET https://api.s4.506software.com/folders
