@@ -1,34 +1,31 @@
 import { QueryInterface, DataTypes } from 'sequelize';
 
-export const up = async ({ context: queryInterface }: { context: QueryInterface }) => {
-  await queryInterface.createTable('ApiKeys', {
+export const up = async ({ context }: { context: QueryInterface }) => {
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const apiKeysTable = isTest ? 'ApiKeys' : { tableName: 'ApiKeys', schema: 'scams3_root' };
+  await context.createTable(apiKeysTable, {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
       autoIncrement: true,
       primaryKey: true,
+      type: DataTypes.INTEGER.UNSIGNED,
     },
     userId: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
-      references: { model: 'Users', key: 'id' },
-      onDelete: 'CASCADE',
     },
     key: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
   });
 };
 
-export const down = async ({ context: queryInterface }: { context: QueryInterface }) => {
-  await queryInterface.dropTable('ApiKeys');
+export const down = async ({ context }: { context: QueryInterface }) => {
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const apiKeysTable = isTest ? 'ApiKeys' : { tableName: 'ApiKeys', schema: 'scams3_root' };
+  await context.dropTable(apiKeysTable);
 };

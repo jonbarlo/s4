@@ -1,17 +1,18 @@
-import { QueryInterface, Sequelize, QueryTypes } from 'sequelize';
+import { QueryInterface, QueryTypes } from 'sequelize';
 
-export const up = async ({ context }: { context: QueryInterface & { sequelize: Sequelize } }) => {
+export const up = async ({ context }: { context: QueryInterface }) => {
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const usersTable = isTest ? 'Users' : '[scams3_root].[Users]';
+  const bucketsTable = isTest ? 'Buckets' : { tableName: 'Buckets', schema: 'scams3_root' };
   try {
     // Fetch all users
     const users = await context.sequelize.query<{ id: number; username: string }>(
-      'SELECT id, username FROM [scams3_root].[Users];',
+      `SELECT id, username FROM ${usersTable};`,
       { type: QueryTypes.SELECT }
     );
-    // Pick the first two users (or repeat if only one exists)
     const user1 = users[0]?.id || 1;
     const user2 = users[1]?.id || user1;
-
-    await context.bulkInsert({ tableName: 'Buckets', schema: 'scams3_root' }, [
+    await context.bulkInsert(bucketsTable, [
       {
         name: 'bucket1',
         targetFTPfolder: 'bucket1-folder',
@@ -34,10 +35,7 @@ export const up = async ({ context }: { context: QueryInterface & { sequelize: S
 };
 
 export const down = async ({ context }: { context: QueryInterface }) => {
-  try {
-    await context.bulkDelete({ tableName: 'Buckets', schema: 'scams3_root' }, {}, {});
-  } catch (err) {
-    console.error('Seeder error (buckets down):', err);
-    throw err;
-  }
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const bucketsTable = isTest ? 'Buckets' : { tableName: 'Buckets', schema: 'scams3_root' };
+  await context.bulkDelete(bucketsTable, {}, {});
 };

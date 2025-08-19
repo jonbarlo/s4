@@ -1,8 +1,10 @@
 import { QueryInterface } from 'sequelize';
 
 export const up = async ({ context }: { context: QueryInterface }) => {
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const filesTable = isTest ? 'Files' : { tableName: 'Files', schema: 'scams3_root' };
   try {
-    await context.bulkInsert({ tableName: 'Files', schema: 'scams3_root' }, [
+    await context.bulkInsert(filesTable, [
       {
         filename: 'file1.txt',
         size: 1234,
@@ -31,10 +33,7 @@ export const up = async ({ context }: { context: QueryInterface }) => {
 };
 
 export const down = async ({ context }: { context: QueryInterface }) => {
-  try {
-    await context.bulkDelete({ tableName: 'Files', schema: 'scams3_root' }, {}, {});
-  } catch (err) {
-    console.error('Seeder error (files down):', err);
-    throw err;
-  }
+  const isTest = process.env.NODE_ENV === 'test' || process.env.DB_DIALECT === 'sqlite';
+  const filesTable = isTest ? 'Files' : { tableName: 'Files', schema: 'scams3_root' };
+  await context.bulkDelete(filesTable, {}, {});
 };
