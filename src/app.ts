@@ -11,7 +11,7 @@ import createFilesRouter from './api/files';
 import createFoldersRouter from './api/folders';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-// import cors from 'cors';
+import cors from 'cors';
 
 // Dual-path .env loading: try ../.env, then ../../.env
 let envPath = path.resolve(__dirname, '../.env');
@@ -30,6 +30,9 @@ app.use(rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 }));
+
+// CORS middleware: allow all origins for public API
+app.use(cors());
 
 // Setup Sequelize connection and models
 const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
