@@ -4,7 +4,80 @@ import { createFolder, deleteFolder } from '../../services/ftp';
 export default function createBucketsRouter(db: any, jwtAuthMiddleware: any) {
   const router = Router();
 
-  // POST /buckets - create a new bucket
+  /**
+   * @openapi
+   * /buckets:
+   *   post:
+   *     summary: Create a new bucket
+   *     description: Creates a new bucket with FTP folder creation and database record
+   *     tags: [Buckets]
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - name
+   *               - targetFTPfolder
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 description: Name of the bucket
+   *                 example: "my-bucket"
+   *               targetFTPfolder:
+   *                 type: string
+   *                 description: FTP folder path for the bucket
+   *                 example: "/uploads/my-bucket"
+   *     responses:
+   *       201:
+   *         description: Bucket created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 bucket:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: integer
+   *                       example: 1
+   *                     name:
+   *                       type: string
+   *                       example: "my-bucket"
+   *                     targetFTPfolder:
+   *                       type: string
+   *                       example: "/uploads/my-bucket"
+   *                     userId:
+   *                       type: integer
+   *                       example: 1
+   *       400:
+   *         description: Missing required fields
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "name and targetFTPfolder are required"
+   *       500:
+   *         description: Server error during bucket creation
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Failed to create bucket"
+   *                 details:
+   *                   type: string
+   *                   example: "FTP connection failed"
+   */
   router.post('/', jwtAuthMiddleware, async (req: Request, res: Response) => {
     const user = (req as any).user;
     const { name, targetFTPfolder } = req.body;
@@ -29,7 +102,62 @@ export default function createBucketsRouter(db: any, jwtAuthMiddleware: any) {
     }
   });
 
-  // GET /buckets - list all buckets for the user
+  /**
+   * @openapi
+   * /buckets:
+   *   get:
+   *     summary: List all buckets for the authenticated user
+   *     description: Returns all buckets associated with the authenticated user
+   *     tags: [Buckets]
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: List of user's buckets
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 buckets:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: integer
+   *                         example: 1
+   *                       name:
+   *                         type: string
+   *                         example: "my-bucket"
+   *                       targetFTPfolder:
+   *                         type: string
+   *                         example: "/uploads/my-bucket"
+   *                       userId:
+   *                         type: integer
+   *                         example: 1
+   *                       createdAt:
+   *                         type: string
+   *                         format: date-time
+   *                         example: "2025-08-18T19:57:27.000Z"
+   *                       updatedAt:
+   *                         type: string
+   *                         format: date-time
+   *                         example: "2025-08-18T19:57:27.000Z"
+   *       500:
+   *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Internal server error"
+   *                 details:
+   *                   type: string
+   *                   example: "Database connection failed"
+   */
   router.get('/', jwtAuthMiddleware, async (req: Request, res: Response) => {
     try {
       const user = (req as any).user;

@@ -39,6 +39,7 @@ const filesToCopy = [
 
 const foldersToCopy = [
   'src',
+  'types',    // Include custom type declarations
   // 'docs',    // if you want docs on server
 ];
 

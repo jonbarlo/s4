@@ -6,10 +6,111 @@ import bcrypt from 'bcrypt';
 export default function createAuthRouter(db: any) {
   const router = Router();
 
+  /**
+   * @openapi
+   * /auth/debug-models:
+   *   get:
+   *     summary: Debug endpoint to show available database models
+   *     description: Returns a list of all available database models for debugging purposes
+   *     tags: [Debug]
+   *     responses:
+   *       200:
+   *         description: List of available models
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 models:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                   example: ["User", "Bucket", "File", "ApiKey"]
+   */
   router.get('/debug-models', (req, res) => {
     res.json({ models: Object.keys(db) });
   });
 
+  /**
+   * @openapi
+   * /auth/login:
+   *   post:
+   *     summary: Authenticate user and get JWT token
+   *     description: Authenticates a user with username and password, returns a JWT token for API access
+   *     tags: [Authentication]
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - username
+   *               - password
+   *             properties:
+   *               username:
+   *                 type: string
+   *                 description: User's username
+   *                 example: "alice"
+   *               password:
+   *                 type: string
+   *                 description: User's password
+   *                 example: "alice-password"
+   *     responses:
+   *       200:
+   *         description: Authentication successful
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "ok"
+   *                 token:
+   *                   type: string
+   *                   description: JWT token for API access
+   *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   *       400:
+   *         description: Missing username or password
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "error"
+   *                 message:
+   *                   type: string
+   *                   example: "Username and password are required."
+   *       401:
+   *         description: Invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "error"
+   *                 message:
+   *                   type: string
+   *                   example: "Invalid username or password."
+   *       500:
+   *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "error"
+   *                 message:
+   *                   type: string
+   *                   example: "JWT_SECRET environment variable is required."
+   */
   router.post('/login', async (req, res) => {
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
