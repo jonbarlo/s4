@@ -62,21 +62,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => res.send('ok'));
 
-app.get('/env-test', (req, res) => {
-  const envExists = fs.existsSync(envPath);
-  res.json({
-    envPath,
-    envExists,
-    cwd: process.cwd(),
-    env: {
-      NODE_ENV: process.env.NODE_ENV,
-      DB_HOST: process.env.DB_HOST,
-      DB_USER: process.env.DB_USER,
-      DB_NAME: process.env.DB_NAME,
-      PORT: process.env.PORT,
-    }
-  });
-});
+// /env-test endpoint removed for production security
 
 app.get('/health', async (req, res) => {
   if (!sequelize) {
