@@ -9,6 +9,8 @@ import { createJwtAuthMiddleware } from './middlewares/auth';
 import createBucketsRouter from './api/buckets';
 import createFilesRouter from './api/files';
 import createFoldersRouter from './api/folders';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 // import cors from 'cors';
 
 // Dual-path .env loading: try ../.env, then ../../.env
@@ -19,6 +21,15 @@ if (!fs.existsSync(envPath)) {
 dotenv.config({ path: envPath });
 
 const app = express();
+
+// Security middleware
+app.use(helmet());
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+}));
 
 // Setup Sequelize connection and models
 const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
