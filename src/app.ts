@@ -65,8 +65,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => res.send('ok'));
 
-// /env-test endpoint removed for production security
-
 app.get('/health', async (req, res) => {
   if (!sequelize) {
     return res.status(500).json({ status: 'error', message: 'Sequelize not initialized' });
@@ -75,7 +73,8 @@ app.get('/health', async (req, res) => {
     const [results] = await sequelize.query('SELECT 1+1 AS result');
     res.json({ status: 'ok', message: 'Health check passed', dbTest: results });
   } catch (err: any) {
-    res.status(500).json({ status: 'error', message: 'DB health check failed', error: err.message });
+    console.error('[ERROR] /health:', err);
+    res.status(500).json({ status: 'error', message: 'DB health check failed' });
   }
 });
 
@@ -87,7 +86,8 @@ app.get('/users', async (req, res) => {
     const [results] = await sequelize.query('SELECT * FROM [scams3_root].[Users]');
     res.json({ status: 'ok', users: results });
   } catch (err: any) {
-    res.status(500).json({ status: 'error', message: 'Failed to fetch users', error: err.message });
+    console.error('[ERROR] /users:', err);
+    res.status(500).json({ status: 'error', message: 'Failed to fetch users' });
   }
 });
 
@@ -97,5 +97,11 @@ app.use('/auth', createAuthRouter(db));
 app.use('/buckets', createBucketsRouter(db, jwtAuthMiddleware));
 app.use('/files', createFilesRouter(db, jwtAuthMiddleware));
 app.use('/folders', createFoldersRouter(db, jwtAuthMiddleware));
+
+// Global error handler: never return stack traces or sensitive info
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('[ERROR] Unhandled error:', err);
+  res.status(500).json({ status: 'error', message: 'Internal server error' });
+});
 
 export default app;
