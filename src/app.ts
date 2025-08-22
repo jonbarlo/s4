@@ -26,12 +26,19 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  standardHeaders: true,
-  legacyHeaders: false,
-}));
+
+// Rate limiting - only in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+  }));
+  console.log('[INFO] Rate limiting enabled for production');
+} else {
+  console.log('[INFO] Rate limiting disabled for development');
+}
 
 // CORS middleware: allow all origins for public API
 app.use(cors());
