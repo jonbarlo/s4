@@ -1,5 +1,5 @@
 ### Health check
-GET http://localhost:3000/health
+GET http://localhost:3000/
 
 ### Login as alice
 POST http://localhost:3000/auth/login
