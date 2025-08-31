@@ -1,8 +1,8 @@
-# S4 Bucket – S3-like API backed by FTP
+# S4 Bucket: S3-like API backed by FTP
 
 ## Overview
 
-S4 Bucket (scams3 or the scam secure storage service) is a Node.js API that mimics AWS S3, but stores files and folders on a remote FTP server. It is designed for cheap, legacy, or shared hosting environments (like Mochahost, Hostigator, GoDaddy, etc.) where only FTP is available. The API supports buckets, files, folders, and full JWT authentication, and is production-tested on IIS/iisnode.
+The "S4" or "scammy secure storage service" a.k.a.: "scammy s3 bucket" is a Node.js API that mimics AWS S3, but stores files and folders on a remote FTP server. It is designed for cheap, legacy, or shared hosting environments (like Mochahost, Hostigator, GoDaddy, etc.) where only FTP is available. The API supports buckets, files, folders, and full JWT authentication, and is production-tested on IIS/iisnode.
 
 ## Architecture
 
@@ -43,7 +43,7 @@ The Swagger UI provides:
 ## Project Structure
 
 ```
-scams3/
+s4/
 ├── src/                # All TypeScript source code
 │   ├── app.ts          # Main Express app (no listen)
 │   ├── server.ts       # Starts the server (production only)
@@ -71,7 +71,7 @@ scams3/
 1. **Clone and install:**
    ```bash
    git clone <repo-url>
-   cd scams3
+   cd s4
    npm install
    ```
 

@@ -1,7 +1,7 @@
 {
-  "name": "scams3",
+  "name": "s4",
   "version": "1.0.0",
-  "description": "S4 (ScamS3) Bucket is a 100% authentic knockoff of AWS S3, but under the hood, it’s just FTP in a trenchcoat. Built with NodeJS, this open-source abomination lets you interact with an S3-like API while secretly storing files on a janky FTP server (yes, even that crusty old IIS shared hosting you’ve been avoiding and that ftp server you have to pay for will work with this).",
+  "description": "S4 Bucket or Scammy S3 Bucket is a 100% authentic knockoff of AWS S3, but under the hood, it’s just FTP in a trenchcoat. Built with NodeJS, this open-source abomination lets you interact with an S3-like API while secretly storing files on a janky FTP server (yes, even that crusty old IIS shared hosting you’ve been avoiding and that ftp server you have to pay for will work with this).",
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -23,15 +23,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jonbarlo/scams3.git"
+    "url": "git+https://github.com/jonbarlo/s4.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jonbarlo/scams3/issues"
+    "url": "https://github.com/jonbarlo/s4/issues"
   },
-  "homepage": "https://github.com/jonbarlo/scams3#readme",
+  "homepage": "https://github.com/jonbarlo/s4#readme",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
