@@ -19,7 +19,7 @@
     "dev": "ts-node src/server.ts",
     "dev:watch": "nodemon --watch src --exec ts-node src/server.ts",
     "test": "jest",
-    "deploy:mochahost": "ts-node src/scripts/deploy-mochahost.ts"
+    "deploy": "ts-node src/scripts/deploy-mochahost.ts"
   },
   "repository": {
     "type": "git",
@@ -72,6 +72,8 @@
     "express-rate-limit": "^6.7.0",
     "helmet": "^7.0.0",
     "swagger-ui-express": "^5.0.1",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0"
   }
 }

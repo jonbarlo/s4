@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { createFolder, deleteFolder } from '../../services/ftp';
+import { createFolder, deleteFolder, deleteFile } from '../../services/ftp';
 
 export default function createBucketsRouter(db: any, jwtAuthMiddleware: any) {
   const router = Router();
@@ -166,6 +166,114 @@ export default function createBucketsRouter(db: any, jwtAuthMiddleware: any) {
     } catch (err: any) {
       console.error('Error in GET /buckets:', err);
       res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+  });
+
+  /**
+   * @openapi
+   * /buckets/{id}:
+   *   delete:
+   *     summary: Delete a bucket and all its files
+   *     description: Deletes a bucket from the database and removes all associated files from the FTP server
+   *     tags: [Buckets]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: Bucket ID to delete
+   *         example: 1
+   *     responses:
+   *       200:
+   *         description: Bucket deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "ok"
+   *                 message:
+   *                   type: string
+   *                   example: "Bucket and all files deleted"
+   *                 deletedFiles:
+   *                   type: integer
+   *                   description: Number of files that were deleted
+   *                   example: 5
+   *       404:
+   *         description: Bucket not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Bucket not found"
+   *       500:
+   *         description: Server error during bucket deletion
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Failed to delete bucket"
+   *                 details:
+   *                   type: string
+   *                   example: "FTP connection failed"
+   */
+  router.delete('/:id', jwtAuthMiddleware, async (req: Request, res: Response) => {
+    const user = (req as any).user;
+    const bucketId = parseInt(req.params.id);
+    
+    try {
+      // Find the bucket and verify ownership
+      const bucket = await db.Bucket.findOne({ where: { id: bucketId, userId: user.id } });
+      if (!bucket) {
+        return res.status(404).json({ error: 'Bucket not found' });
+      }
+
+      // Find all files in this bucket
+      const files = await db.File.findAll({ where: { bucketId, userId: user.id } });
+      
+      // Delete all files from FTP server
+      for (const file of files) {
+        try {
+          const remotePath = `${file.targetFTPfolder}/${file.filename}`;
+          await deleteFile(remotePath);
+        } catch (err) {
+          console.error(`Failed to delete file ${file.filename} from FTP:`, err);
+          // Continue with other files even if one fails
+        }
+      }
+
+      // Delete all file records from database
+      await db.File.destroy({ where: { bucketId, userId: user.id } });
+      
+      // Delete the bucket record
+      await bucket.destroy();
+      
+      // Try to remove the FTP folder (this might fail if there are other files)
+      try {
+        await deleteFolder(bucket.targetFTPfolder);
+      } catch (err) {
+        console.log(`Note: Could not remove FTP folder ${bucket.targetFTPfolder} (may contain other files)`);
+      }
+
+      res.json({ 
+        status: 'ok', 
+        message: 'Bucket and all files deleted',
+        deletedFiles: files.length
+      });
+    } catch (err: any) {
+      console.error('Error deleting bucket:', err);
+      res.status(500).json({ error: 'Failed to delete bucket', details: err.message });
     }
   });
 

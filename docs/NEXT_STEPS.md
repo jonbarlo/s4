@@ -9,6 +9,7 @@
 - **Debug endpoints (e.g., /env-test) have been removed for production security.**
 - **CORS is configured for a public API (all origins allowed).**
 - **Error messages are hardened: no stack traces or sensitive info are returned to clients.**
+- **Complete CRUD operations implemented: All deletion endpoints (files, buckets, folders) are now working.**
 
 ---
 
@@ -19,7 +20,7 @@
 
 2. **Testing**
    - Add or expand integration tests for all endpoints (especially edge cases and error handling).
-   - Test file/folder operations thoroughly.
+   - Test file/folder operations thoroughly (including the newly implemented deletion endpoints).
 
 3. **Monitoring & Logging**
    - Add production logging (e.g., Winston, Sentry) if desired.
@@ -44,6 +45,7 @@
 - **File Rename/Move**: Currently only delete/re-upload
 - **File Copy**: Duplicate files across buckets
 - **Batch Operations**: Delete multiple files at once
+- **Complete Deletion**: All deletion endpoints (files, buckets, folders) are now implemented
 
 ### 2. Advanced Features
 - **File Versioning**: Keep file history

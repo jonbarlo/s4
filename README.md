@@ -144,6 +144,7 @@ See `api.http` (local) and `api.prod.http` (production) for ready-to-use request
 **Buckets**
 - `GET /buckets` – List buckets
 - `POST /buckets` – Create bucket
+- `DELETE /buckets/:id` – Delete bucket and all its files
 
 **Files**
 - `GET /files` – List files
@@ -154,6 +155,7 @@ See `api.http` (local) and `api.prod.http` (production) for ready-to-use request
 **Folders**
 - `GET /folders` – List folders
 - `POST /folders` – Create folder
+- `DELETE /folders` – Delete all files in a folder
 
 **Auth**
 - `POST /auth/login` – Get JWT
